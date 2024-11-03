@@ -1,5 +1,6 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Application, CommandHandler, CallbackContext, CallbackQueryHandler, MessageHandler, filters
+from telegram.ext import (Application, CommandHandler, CallbackContext, CallbackQueryHandler, MessageHandler, filters,
+                          ApplicationBuilder)
 from game_info_fetcher import GameInfoFetcher
 from dotenv import load_dotenv
 import os
@@ -7,6 +8,9 @@ load_dotenv()
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 RAWG_API_KEY = os.getenv("RAWG_API_KEY")
+
+app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
+
 
 fetcher = GameInfoFetcher(RAWG_API_KEY)
 
@@ -45,15 +49,12 @@ async def game(update: Update, context: CallbackContext):
     # Then send the game details
     await update.message.reply_text(game_details)
 
-def main():
-    application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
+# Use a webhook to receive updates
+app.run_webhook(listen="0.0.0.0", port=int(os.environ.get('PORT', 5000)))
+# Add the handlers after setting up the application
+app.add_handler(CommandHandler("start", start))
+app.add_handler(CallbackQueryHandler(button_handler))  # Handle button presses
+app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, game))  # Handle game title input
 
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CallbackQueryHandler(button_handler))  # Handle button presses
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, game))  # Handle game title input
-    application.run_polling()
-
-if __name__ == '__main__':
-    main()
 
 

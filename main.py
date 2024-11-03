@@ -11,7 +11,6 @@ RAWG_API_KEY = os.getenv("RAWG_API_KEY")
 
 app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
 
-
 fetcher = GameInfoFetcher(RAWG_API_KEY)
 
 async def start(update: Update, context: CallbackContext):
@@ -26,11 +25,13 @@ async def start(update: Update, context: CallbackContext):
     )
     await update.message.reply_text(welcome_text, reply_markup=reply_markup)
 
+
 async def button_handler(update: Update, context: CallbackContext):
     query = update.callback_query
     await query.answer()  # Acknowledge the button press
     # Prompt user to enter the game name
     await query.edit_message_text(text="You can just type the name of the game to get details.")
+
 
 async def game(update: Update, context: CallbackContext):
     """Fetch game details based on the user's message."""
@@ -49,12 +50,18 @@ async def game(update: Update, context: CallbackContext):
     # Then send the game details
     await update.message.reply_text(game_details)
 
-# Use a webhook to receive updates
-app.run_webhook(listen="0.0.0.0", port=int(os.environ.get('PORT', 5000)))
 # Add the handlers after setting up the application
 app.add_handler(CommandHandler("start", start))
 app.add_handler(CallbackQueryHandler(button_handler))  # Handle button presses
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, game))  # Handle game title input
+# Use a webhook to receive updates
+app.run_webhook(
+    listen="0.0.0.0",
+    port=int(os.environ.get("PORT", 5000)),
+    url_path=TELEGRAM_BOT_TOKEN,
+    webhook_url=f"https://gametgbot.onrender.com/{TELEGRAM_BOT_TOKEN}"
+)
+
 
 
 

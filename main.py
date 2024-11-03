@@ -1,9 +1,11 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackContext, CallbackQueryHandler, MessageHandler, filters
 from game_info_fetcher import GameInfoFetcher
+from dotenv import load_dotenv
+load_dotenv()
 
-TELEGRAM_BOT_TOKEN = "8183652179:AAGGVh6NRlnBIIPUZw36Fd_Z1A-GH38RiHQ"
-RAWG_API_KEY = "414ab0a898614693bcd8f4a8e93cb634"
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+RAWG_API_KEY = os.getenv("RAWG_API_KEY")
 
 fetcher = GameInfoFetcher(RAWG_API_KEY)
 

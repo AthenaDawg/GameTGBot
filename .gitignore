@@ -1,1 +1,17 @@
+# Ignore Python cache and compiled files
+__pycache__/
+*.py[cod]
+*.egg-info/
 
+# Ignore environment settings and tokens
+.env
+*.env
+*.pyvenv
+.venv/
+.venv/bin/
+
+# Ignore OS and IDE settings
+.DS_Store
+.idea/
+.vscode/
+.env
